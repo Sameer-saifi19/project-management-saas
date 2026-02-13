@@ -1,10 +1,11 @@
-'use server'
+"use server";
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { createOrgSchema, createOrgSchemaType } from "@/schema/organization";
 import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
+import { id } from "zod/v4/locales";
 
 export const createProject = async (values: createOrgSchemaType) => {
   const session = await auth.api.getSession({
@@ -64,6 +65,102 @@ export const createProject = async (values: createOrgSchemaType) => {
       status: 201,
       message: "Organization created successfully",
       data: data,
+    };
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.status,
+        message: error.message,
+        code: error.statusCode,
+      };
+    }
+
+    return {
+      success: false,
+      status: 500,
+      message: "Internal server error",
+    };
+  }
+};
+
+export const getAllProjects = async (orgId: string) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return {
+      success: false,
+      status: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  try {
+    const projects = await prisma.project.findMany({
+      where: {
+        organizationId: orgId,
+      },
+    });
+
+    if (!projects) {
+      return {
+        success: false,
+        status: 500,
+        message: "Error fetching projects",
+        data: null
+      };
+    }
+
+    return {status:200, data: projects, message: "All projects"}
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.status,
+        message: error.message,
+        code: error.statusCode,
+      };
+    }
+
+    return {
+      success: false,
+      status: 500,
+      message: "Internal server error",
+    };
+  }
+};
+
+
+export const deleteProject = async (projectId: string) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return {
+      success: false,
+      status: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  try {
+    const result = await prisma.project.delete({
+      where: {
+        id: projectId,
+      },
+    });
+
+    if (!result) {
+      return { status: 409, success: false, message: "Cannot delete project" };
+    }
+
+    return {
+      status: 200,
+      data: result,
+      message: "Project deleted successfully",
     };
   } catch (error) {
     if (error instanceof APIError) {
