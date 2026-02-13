@@ -1,0 +1,65 @@
+"use client";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+export default function OrgSwitcher() {
+  const {data: activeOrganization} = authClient.useActiveOrganization()
+  const router = useRouter();
+  
+  const { data: organizations } = authClient.useListOrganizations();
+  const [value, setValue] = useState<string | undefined>(undefined)
+  
+  useEffect(() => {
+    if (activeOrganization) {
+      setValue(activeOrganization.id);
+    }
+  }, [activeOrganization]);
+
+  const handleValueChange = async (organizationId: string) => {
+    
+    const org = organizations?.find((o) => o.id === organizationId);
+
+    try {
+      const { data, error } = await authClient.organization.setActive({
+        organizationId,
+      });
+      router.push(`/dashboard/${org?.slug}`);
+
+      if (data) {
+        toast.success(`Switched to ${org?.name} workspace`);
+      } else {
+        toast.error(error.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <>
+      <Select value={value}  onValueChange={handleValueChange}>
+        <SelectTrigger className="w-full max-w-2xl">
+          <SelectValue placeholder="Select workspace" />
+        </SelectTrigger>
+        <SelectContent position="popper">
+          {organizations &&
+            organizations.map((org, idx) => (
+              <SelectItem key={idx} value={org.id}>
+                {org.name}
+              </SelectItem>
+            ))}
+        </SelectContent>
+      </Select>
+    </>
+  );
+}
