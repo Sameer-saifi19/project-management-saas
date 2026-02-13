@@ -1,26 +1,111 @@
 "use server";
 
 import { auth } from "@/lib/auth";
+import { createOrgSchema, createOrgSchemaType } from "@/schema/organization";
+import { APIError } from "better-auth/api";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
-export const createOrganization = async (formData: FormData) => {
-  const name = formData.get("name") as string;
-  const slug = formData.get("slug") as string;
+export const createOrganization = async (formData: createOrgSchemaType) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  const metadata = { someKey: "someValue" };
+  if (!session) {
+    return {
+      success: false,
+      status: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  const parsed = createOrgSchema.safeParse(formData);
+  if (!parsed.success) {
+    return { success: false, message: "Invalid data" };
+  }
+
+  const { name, slug, description } = parsed.data;
+
+  const normalizedSlug = slug.toLowerCase().trim().replace(/\s+/g, "-");
   try {
+    const checkSlug = await auth.api.checkOrganizationSlug({
+      body: {
+        slug: normalizedSlug,
+      },
+    });
+
+    if (!checkSlug) {
+      return {
+        status: 409,
+        message: "An organization is already exist with this slug",
+      };
+    }
+
     const data = await auth.api.createOrganization({
       body: {
         name,
-        slug,
-        logo: "https://example.com/logo.png",
-        metadata,
-        userId: "some_user_id",
-        keepCurrentActiveOrganization: false,
+        slug: normalizedSlug,
+        description,
+        keepCurrentActiveOrganization: true,
       },
       headers: await headers(),
     });
 
+    revalidatePath("/dashboard", "layout");
 
-  } catch (error) {}
+    if (!data) {
+      return {
+        success: false,
+        status: 500,
+        message: "Error creating organization",
+      };
+    }
+
+    return {
+      success: true,
+      status: 201,
+      message: "Organization created successfully",
+      data: data,
+    };
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.status,
+        message: error.message,
+        code: error.statusCode,
+      };
+    }
+
+    return {
+      success: false,
+      status: 500,
+      message: "Internal server error",
+    };
+  }
+};
+
+export const listOrganization = async () => {
+  try {
+    const data = await auth.api.listOrganizations({
+      headers: await headers(),
+    });
+
+    return data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.status,
+        message: error.message,
+        code: error.statusCode,
+      };
+    }
+
+    return {
+      success: false,
+      status: 500,
+      message: "Internal server error",
+    };
+  }
 };

@@ -1,16 +1,28 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createOrgSchema, createOrgSchemaType } from "@/schema/organization";
 import { generateSlug } from "@/utils/slug-generator";
-import { useEffect } from "react";
+import { useEffect, useTransition } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 import { Textarea } from "../ui/textarea";
+import { createOrganization } from "@/server/organization";
+import { toast } from "sonner";
 
 export default function CreateOrgForm() {
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<createOrgSchemaType>({
     resolver: zodResolver(createOrgSchema),
     defaultValues: {
@@ -30,8 +42,23 @@ export default function CreateOrgForm() {
     }
   }, [nameValue, form]);
 
-  function onSubmit(data: createOrgSchemaType) {
-    console.log(data);
+  function onSubmit(formdata: createOrgSchemaType) {
+    startTransition(async () => {
+      try {
+        const res = await createOrganization(formdata);
+
+        if (res.status === 201) {
+          toast.success("Organization created");
+        } else {
+          if (!res.success) {
+            toast.error(res.message);
+          }
+        }
+        form.reset()
+      } catch (error) {
+        toast.error("Something went wrong")
+      }
+    });
   }
 
   return (
@@ -50,12 +77,8 @@ export default function CreateOrgForm() {
                 <FormLabel>Name</FormLabel>
 
                 <FormControl>
-                  <Input placeholder="Enter category name" {...field} />
+                  <Input placeholder="Enter organization name" {...field} />
                 </FormControl>
-
-                <FormDescription>
-                  This will be used to generate the slug.
-                </FormDescription>
 
                 <FormMessage />
               </FormItem>
@@ -71,10 +94,15 @@ export default function CreateOrgForm() {
                 <FormLabel>Slug</FormLabel>
 
                 <FormControl>
-                  <Input placeholder="auto-generated-slug" {...field} />
+                  <Input
+                    placeholder="slug will auto generate from name"
+                    {...field}
+                  />
                 </FormControl>
 
-                <FormDescription>This slug is used as unique identifier for organizations.</FormDescription>
+                <FormDescription>
+                  This slug is used as unique identifier for organizations.
+                </FormDescription>
 
                 <FormMessage />
               </FormItem>
@@ -91,7 +119,7 @@ export default function CreateOrgForm() {
 
                 <FormControl>
                   <Textarea
-                    rows={4}
+                    rows={8}
                     placeholder="Enter description"
                     {...field}
                   />
@@ -102,7 +130,7 @@ export default function CreateOrgForm() {
             )}
           />
 
-          <Button type="submit">Create Category</Button>
+          <Button type="submit">Create organization</Button>
         </form>
       </Form>
     </>

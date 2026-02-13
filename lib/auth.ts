@@ -28,5 +28,17 @@ export const auth = betterAuth({
       enabled: true,
     },
   },
-  plugins: [organization()],
+  plugins: [organization({
+    schema:{
+      organization:{
+        additionalFields:{
+          description: {
+            type: "string",
+            input: true,
+            required: false
+          }
+        }
+      }
+    }
+  })],
 });
