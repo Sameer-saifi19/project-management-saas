@@ -8,67 +8,69 @@ datasource db {
 }
 
 model User {
-  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   name          String
-  email         String       @unique
-  emailVerified Boolean      @default(false)
+  email         String  @unique
+  emailVerified Boolean @default(false)
   image         String?
 
-  sessions      Session[]
-  accounts      Account[]
-  members       Member[]
-  invitations   Invitation[]
+  sessions    Session[]
+  accounts    Account[]
+  members     Member[]
+  invitations Invitation[]
+  projects    Project[]
 
   @@map("users")
 }
 
 model Organization {
-  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt   DateTime     @default(now())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
 
   name        String
-  slug        String       @unique
+  slug        String  @unique
   logo        String?
   description String?
   metadata    String?
 
   members     Member[]
   invitations Invitation[]
+  projects    Project[]
 
   @@map("organizations")
 }
 
 model Member {
-  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt      DateTime     @default(now())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
 
-  organizationId String       @db.Uuid
-  userId         String       @db.Uuid
-  role           String       @default("member")
+  organizationId String @db.Uuid
+  userId         String @db.Uuid
+  role           String @default("member")
 
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, userId])
   @@map("member")
 }
 
 model Invitation {
-  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt      DateTime     @default(now())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
 
-  organizationId String       @db.Uuid
-  inviterId      String       @db.Uuid
+  organizationId String   @db.Uuid
+  inviterId      String   @db.Uuid
   email          String
   role           String?
-  status         String       @default("pending")
+  status         String   @default("pending")
   expiresAt      DateTime
 
-  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([email])
@@ -76,8 +78,8 @@ model Invitation {
 }
 
 model Session {
-  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt            DateTime @default(now())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
 
   userId               String   @db.Uuid
   expiresAt            DateTime
@@ -87,16 +89,16 @@ model Session {
   userAgent            String?
   activeOrganizationId String?
 
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("sessions")
 }
 
 model Account {
-  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId                String    @db.Uuid
   accountId             String
@@ -109,17 +111,17 @@ model Account {
   scope                 String?
   password              String?
 
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("accounts")
 }
 
 model Verification {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   identifier String
   value      String
   expiresAt  DateTime
@@ -127,3 +129,27 @@ model Verification {
   @@index([identifier])
   @@map("verifications")
 }
+
+model Project {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  slug        String  @unique
+  description String?
+  isArchived  Boolean @default(false)
+
+  userId         String @db.Uuid
+  organizationId String @db.Uuid
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, userId])
+  @@unique([organizationId])
+  
+  @@map("projects")
+}
+
+

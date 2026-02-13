@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "docker": "docker start c1f2c7e645ed9520142745fde9cc4ff11a63352dbc42d7cf95255292eec67997"
+    "docker": "docker start c1f2c7e645ed9520142745fde9cc4ff11a63352dbc42d7cf95255292eec67997",
+    "prisma": "npx prisma db push && npx prisma generate"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",

@@ -46,7 +46,7 @@ export default function CreateOrgForm() {
     startTransition(async () => {
       try {
         const res = await createOrganization(formdata);
-
+        
         if (res.status === 201) {
           toast.success("Organization created");
         } else {
@@ -54,9 +54,9 @@ export default function CreateOrgForm() {
             toast.error(res.message);
           }
         }
-        form.reset()
+        form.reset();
       } catch (error) {
-        toast.error("Something went wrong")
+        toast.error("Something went wrong");
       }
     });
   }
@@ -96,7 +96,7 @@ export default function CreateOrgForm() {
                 <FormControl>
                   <Input
                     placeholder="slug will auto generate from name"
-                    {...field}
+                    {...field} disabled
                   />
                 </FormControl>
 
@@ -130,7 +130,10 @@ export default function CreateOrgForm() {
             )}
           />
 
-          <Button type="submit">Create organization</Button>
+          <Button type="submit" disabled={isPending}>
+            {" "}
+            {isPending ? "creating..." : "Create Organization"}
+          </Button>
         </form>
       </Form>
     </>

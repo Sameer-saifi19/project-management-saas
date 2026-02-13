@@ -7,8 +7,7 @@ export default function Page() {
       <div className="flex items-center justify-center gap-4 h-screen">
         <h1 className="text-4xl">Dashboard</h1>
         <SignOutButton />
-        <div className="w-full max-w-sm">
-
+        <div className="w-full max-w-xs">
         <OrgSwitcher/>
         </div>
       </div>
