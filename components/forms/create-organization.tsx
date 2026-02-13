@@ -1,6 +1,6 @@
 "use client";
 
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createOrgSchema, createOrgSchemaType } from "@/schema/organization";
 import { generateSlug } from "@/utils/slug-generator";

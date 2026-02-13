@@ -1,5 +1,4 @@
 import CreateOrgForm from "@/components/forms/create-organization";
-import { SignOutButton } from "../auth/_components/signout-btn";
 
 export default function Page() {
   return (

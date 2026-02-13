@@ -11,7 +11,6 @@ interface OauthButtonProps {
 }
 
 export const GoogleBtn = ({ signUp }: OauthButtonProps) => {
-
   const [isPending, setIsPending] = useState(false);
 
   const handleClick = async () => {
@@ -19,9 +18,9 @@ export const GoogleBtn = ({ signUp }: OauthButtonProps) => {
 
     await signIn.social({
       provider: "google",
-      callbackURL: "/onboarding",
+      callbackURL: "/auth/post-auth",
       errorCallbackURL: "/auth/sign-in/error",
-      fetchOptions:{
+      fetchOptions: {
         onError: (ctx) => {
           toast.error(ctx.error.message);
         },
