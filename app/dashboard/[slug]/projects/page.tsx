@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth";
 import { getAllProjects } from "@/server/project";
 import { headers } from "next/headers";
 import ProjectList from "./project-list";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function Page() {
 

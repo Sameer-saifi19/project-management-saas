@@ -12,6 +12,8 @@ import { deleteProject } from "@/server/project";
 import { Edit, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { EditProjectModal } from "@/components/modals/edit-modal";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 type Projects = {
   id: string;
@@ -25,6 +27,8 @@ export default function ProjectList({
 }: {
   projects: Projects[];
 }) {
+  const pathName = usePathname()
+  
   const [selected, setSelected] =
     useState<Projects | null>(null);
 
@@ -105,6 +109,9 @@ export default function ProjectList({
             </CardContent>
           </Card>
         ))}
+        <Button> 
+          <Link href={`${pathName}/create-project`}> Create project</Link>
+        </Button>
       </div>
 
       {selected && (
