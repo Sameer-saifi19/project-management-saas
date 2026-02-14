@@ -30,11 +30,11 @@ export default function ProjectList({ projects }: { projects: Projects[] }) {
     const result = await deleteProject(projectId);
 
     if (result.status !== 200) {
-      toast.error("Error updating project");
+      toast.error("Error deleting project");
       return;
     }
 
-    toast.success("Project updated successfully");
+    toast.success("Project deleted successfully");
   };
 
   return (
@@ -69,7 +69,7 @@ export default function ProjectList({ projects }: { projects: Projects[] }) {
               </CardHeader>
 
               <CardContent>
-                <p className="text-md text-muted-foreground">{project.description || null}</p>
+                <p className="text-md text-muted-foreground">{project.description || "No description"}</p>
               </CardContent>
               <CardFooter>
                 <p className="text-xs text-muted-foreground">{`Created on ${formatDateTime(project.createdAt)}`}</p>

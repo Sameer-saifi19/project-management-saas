@@ -60,8 +60,7 @@ export const createProject = async (values: createProjectSchemaType) => {
       };
     }
 
-    revalidatePath("/", "layout")
-
+    revalidatePath('/', "layout")
     return {
       success: true,
       status: 201,
@@ -87,7 +86,7 @@ export const createProject = async (values: createProjectSchemaType) => {
   }
 };
 
-export const getAllProjects = async (orgId: string) => {
+export const getAllProjects = async (orgId: string, orgSlug: string) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -105,6 +104,9 @@ export const getAllProjects = async (orgId: string) => {
       where: {
         organizationId: orgId,
       },
+      orderBy: {
+        createdAt: "desc"
+      }
     });
 
     if (!projects) {
