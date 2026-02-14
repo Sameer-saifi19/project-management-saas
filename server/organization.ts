@@ -51,7 +51,7 @@ export const createOrganization = async (formData: createOrgSchemaType) => {
       headers: await headers(),
     });
 
-    revalidatePath("/dashboard", "layout");
+    revalidatePath("/w", "layout");
 
     if (!data) {
       return {

@@ -7,5 +7,5 @@ export default async function PostAuthPage() {
   if (orgCount === 0) {
     redirect("/onboarding");
   }
-  redirect("/dashboard");
+  redirect("/w");
 }

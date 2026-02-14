@@ -1,16 +1,23 @@
 import { auth } from "@/lib/auth";
 import { getAllProjects } from "@/server/project";
 import { headers } from "next/headers";
-import ProjectList from "../client";
+import ProjectList from "./client";
 
-export default async function Page() {
+type Props = {
+  params: { slug: string };
+};
+
+export default async function Page({ params }: Props) {
+  const { slug } = await params;
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   const projects = await getAllProjects(
     session?.session.activeOrganizationId as string,
+    slug
   );
+
   return (
     <>
       <div className="flex items-center justify-center w-full">

@@ -1,4 +1,4 @@
-import { CreditCard, Folder, Settings, SquareUserRound, UserCircle2Icon, UserCog2, Users2 } from "lucide-react";
+import { CreditCard, Folder, LayoutDashboard, Settings, SquareUserRound, UserCircle2Icon, UserCog2, Users2 } from "lucide-react";
 import React from "react";
 
 export const menuItems = (
@@ -6,22 +6,22 @@ export const menuItems = (
 ): { title: string; url: string; icon: React.ReactNode }[] => [
   {
     title: "Projects",
-    url: `/dashboard/${slug}/projects`,
+    url: `/w/${slug}/projects`,
     icon: <Folder />,
   },
   {
     title: "Members",
-    url: `/dashboard/${slug}/members`,
+    url: `/w/${slug}/members`,
     icon: <Users2 />,
   },
   {
     title: "Settings",
-    url: `/dashboard/${slug}/settings`,
+    url: `/w/${slug}/settings`,
     icon: <Settings />,
   },
   {
     title: "Upgrade workspace",
-    url: `/dashboard/${slug}/billings`,
+    url: `/w/${slug}/billings`,
     icon: <CreditCard />,
   },
 ];

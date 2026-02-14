@@ -18,7 +18,7 @@ export async function proxy(req: NextRequest) {
   }
 
   if (isOnAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/w", req.url));
   }
 
   return res;

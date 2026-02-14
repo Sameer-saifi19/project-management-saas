@@ -33,7 +33,7 @@ export default function OrgSwitcher() {
       const { data, error } = await authClient.organization.setActive({
         organizationId,
       });
-      router.push(`/dashboard/${org?.slug}`);
+      router.push(`/w/${org?.slug}`);
 
       if (data) {
         toast.success(`Switched to ${org?.name} workspace`);

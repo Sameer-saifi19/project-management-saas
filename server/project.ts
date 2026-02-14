@@ -161,7 +161,7 @@ export const deleteProject = async (projectId: string) => {
       return { status: 409, success: false, message: "Cannot delete project" };
     }
 
-    revalidatePath('/dashboard', 'layout')
+    revalidatePath('/w', 'layout')
     return {
       status: 200,
       data: result,
@@ -246,7 +246,7 @@ export const updateProject = async (
       return { status: 500, success: false, message: "Error updating project" };
     }
     
-    revalidatePath('/dashboard', "layout")
+    revalidatePath('/w', "layout")
 
     return {
       status: 200,
