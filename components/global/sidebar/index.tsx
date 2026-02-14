@@ -32,7 +32,7 @@ export default function DashboardSidebar({ activeOrganizationId, userId }: Props
         <SidebarSeparator />
         <SidebarContent>
 
-          <SidebarGroup className="space-y-4">
+          <SidebarGroup className="space-y-2">
             <SidebarGroupLabel>
               Workspace
             </SidebarGroupLabel>

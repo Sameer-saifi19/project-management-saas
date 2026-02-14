@@ -14,13 +14,14 @@ import { toast } from "sonner";
 import { usePathname } from "next/navigation";
 import { CreateProjectSheet } from "@/components/modals/create-project";
 import { formatDateTime } from "@/utils/date-formatter";
+import Link from "next/link";
 
 type Projects = {
   id: string;
   name: string;
   slug: string;
   description?: string | null;
-  createdAt: Date
+  createdAt: Date;
 };
 
 export default function ProjectList({ projects }: { projects: Projects[] }) {
@@ -45,36 +46,40 @@ export default function ProjectList({ projects }: { projects: Projects[] }) {
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
             All Projects
           </h1>
-          <CreateProjectSheet/>
+          <CreateProjectSheet />
         </div>
 
         {/* main part  */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {!projects.length ? <h1>No projects found</h1> : null}
           {projects.map((project) => (
-            <Card key={project.id} className="hover:shadow-md transition">
-              <CardHeader>
-                <h3 className="font-semibold text-lg">{project.name}</h3>
-                <CardAction>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={() => handleDelete(project.id)}
-                      variant="destructive"
-                      size="icon"
-                    >
-                      <Trash />
-                    </Button>
-                  </div>
-                </CardAction>
-              </CardHeader>
+            <Link href={`/p/${project.slug}`} key={project.id}>
+              <Card  className="hover:shadow-md dark:hover:bg-muted transition">
+                <CardHeader>
+                  <h3 className="font-semibold text-lg">{project.name}</h3>
+                  <CardAction>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleDelete(project.id)}
+                        variant="destructive"
+                        size="icon"
+                      >
+                        <Trash />
+                      </Button>
+                    </div>
+                  </CardAction>
+                </CardHeader>
 
-              <CardContent>
-                <p className="text-md text-muted-foreground">{project.description || "No description"}</p>
-              </CardContent>
-              <CardFooter>
-                <p className="text-xs text-muted-foreground">{`Created on ${formatDateTime(project.createdAt)}`}</p>
-              </CardFooter>
-            </Card>
+                <CardContent>
+                  <p className="text-md text-muted-foreground">
+                    {project.description || "No description"}
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <p className="text-xs text-muted-foreground">{`Created on ${formatDateTime(project.createdAt)}`}</p>
+                </CardFooter>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
