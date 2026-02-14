@@ -147,7 +147,6 @@ model Project {
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, userId])
-  @@unique([organizationId])
   
   @@map("projects")
 }

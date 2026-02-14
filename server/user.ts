@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 export const onUserAuthenticate = async () => {
   try {
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session?.user.id) {
@@ -22,4 +22,12 @@ export const onUserAuthenticate = async () => {
     console.error("Org check failed:", error);
     return null;
   }
+};
+
+export const checkSession = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  return session
 };

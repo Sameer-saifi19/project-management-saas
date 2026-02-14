@@ -60,12 +60,15 @@ export const createProject = async (values: createProjectSchemaType) => {
       };
     }
 
+    revalidatePath("/", "layout")
+
     return {
       success: true,
       status: 201,
       message: "Organization created successfully",
       data: data,
     };
+    
   } catch (error) {
     if (error instanceof APIError) {
       return {
