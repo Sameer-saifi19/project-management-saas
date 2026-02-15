@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import ReactQueryProvider from "@/react-query/query-provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -37,8 +38,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster position="top-center" duration={2500} richColors />
+          <ReactQueryProvider>
+            {children}
+            <Toaster position="top-center" duration={2500} richColors />
+          </ReactQueryProvider>
+          
         </ThemeProvider>
       </body>
     </html>

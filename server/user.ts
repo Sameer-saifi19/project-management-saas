@@ -29,5 +29,8 @@ export const checkSession = async () => {
     headers: await headers(),
   });
 
+  if(!session){
+    return {status: 401, message: "Unauthorized", success: false}
+  }
   return session
 };
