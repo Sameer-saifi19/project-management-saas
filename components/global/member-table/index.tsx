@@ -65,7 +65,7 @@ export default function MemberTable({
           >
             {/* Avatar */}
             <TableCell className="text-center">
-              {item.image && <Image src={item.image ? "/person-placeholder.png" : ""} height={30} width={30} alt="member avatar" className="rounded-full object-cover mx-auto"/>}
+              {item.image ? <Image src={item.image} height={30} width={30} alt="member avatar" className="rounded-full object-cover mx-auto"/>: <Image src="/person-placeholder.png" height={30} width={30} alt="default avatar" className="rounded-full object-cover mx-auto"/>}
             </TableCell>
 
             {/* Name */}
@@ -91,6 +91,7 @@ export default function MemberTable({
               <Button
                 variant="destructive"
                 size="icon"
+                disabled={item.role === "owner"}
               >
                 <Trash className="w-4 h-4" />
               </Button>

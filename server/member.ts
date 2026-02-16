@@ -3,21 +3,23 @@
 import prisma from "@/lib/prisma";
 import { APIError } from "better-auth/api";
 import { checkSession } from "./user";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export const listMembers = async (slug: string) => {
   await checkSession();
 
   try {
     const data = await prisma.organization.findUnique({
-      where: {slug},
+      where: { slug },
       include: {
         members: {
           include: {
-            user: true
-          }
-        }
-      }
-    })
+            user: true,
+          },
+        },
+      },
+    });
 
     if (!data) {
       return {
@@ -28,7 +30,52 @@ export const listMembers = async (slug: string) => {
       };
     }
 
-    return{status: 200, success: true, data: data}
+    return { status: 200, success: true, data: data };
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.status,
+        message: error.message,
+        code: error.statusCode,
+      };
+    }
+
+    return {
+      success: false,
+      status: 500,
+      message: "Internal server error",
+    };
+  }
+};
+
+export const updateMemberRole = async (memberId: string, role: "owner" | "admin" | "member") => {
+  await checkSession();
+
+  try {
+    const data = await auth.api.updateMemberRole({
+      body: {
+        role: role,
+        memberId: memberId
+      },
+
+      headers: await headers(),
+    });
+
+    if (!data) {
+      return {
+        status: 500,
+        success: false,
+        message: "Error getting members",
+        data: null,
+      };
+    }
+
+    return {
+      success: true,
+      status: 200,
+      data: data,
+    };
   } catch (error) {
     if (error instanceof APIError) {
       return {
