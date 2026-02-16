@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import Orgpage from "./org-list";
+import Orgpage from "./client";
 
 export default async function OrganizationList() {
   const session = await auth.api.getSession({

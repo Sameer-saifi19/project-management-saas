@@ -1,21 +1,23 @@
 "use server";
 
-import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { APIError } from "better-auth/api";
 import { checkSession } from "./user";
 
-export const getAllOrgMembers = async (orgId: string) => {
+export const listMembers = async (slug: string) => {
   await checkSession();
+
   try {
-    const data = await prisma.member.findMany({
-      where: {
-        organizationId: orgId,
-      },
+    const data = await prisma.organization.findUnique({
+      where: {slug},
       include: {
-        user: true,
-      },
-    });
+        members: {
+          include: {
+            user: true
+          }
+        }
+      }
+    })
 
     if (!data) {
       return {
@@ -26,7 +28,7 @@ export const getAllOrgMembers = async (orgId: string) => {
       };
     }
 
-    return { status: 200, success: true, data: data };
+    return{status: 200, success: true, data: data}
   } catch (error) {
     if (error instanceof APIError) {
       return {

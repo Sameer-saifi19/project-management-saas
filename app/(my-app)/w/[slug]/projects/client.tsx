@@ -60,7 +60,6 @@ export default function ProjectList({ projects }: { projects: Projects[] }) {
                   <CardAction>
                     <div className="flex gap-2">
                       <Button
-                      asChild
                         onClick={() => handleDelete(project.id)}
                         variant="destructive"
                         size="icon"
