@@ -1,4 +1,5 @@
 import MemberTable from "@/components/global/member-table";
+import AddNewMember from "@/components/modals/add-member";
 import { listMembers } from "@/server/member";
 
 export default async function MembersPage({
@@ -21,12 +22,20 @@ export default async function MembersPage({
 
   return (
     <>
-      <div className="flex w-full justify-between">
-        <div className="w-3/4">
-          <MemberTable members={flattenData} />
-        </div>
-        <div className="w-1/4 bg-accent">
+      <div className="flex flex-col gap-12 w-full justify-between">
+        <div className="flex items-center justify-between">
+                  <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+                    Collaborators
+                  </h1>
+                  <AddNewMember/>
+                </div>
+        <div className="flex">
+          <div className="w-3/4">
+            <MemberTable members={flattenData} />
+          </div>
+          <div className="w-1/4 bg-accent">
             <h1>Tabs Area</h1>
+          </div>
         </div>
       </div>
     </>
