@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { UserPlus2, Link as LinkIcon } from "lucide-react"
-import { Button } from "../ui/button"
+import { UserPlus2, Link as LinkIcon } from "lucide-react";
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,37 +9,43 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog"
-import { Input } from "../ui/input"
+} from "../ui/dialog";
+import { Input } from "../ui/input";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "../ui/form"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
+} from "../ui/form";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { sendOrganizationInvitation } from "@/server/emails";
 
 type FormValues = {
-  email: string
-}
+  email: string;
+};
 
-export default function AddNewMember() {
+export default function AddNewMemberInvite() {
   const form = useForm<FormValues>({
     defaultValues: {
       email: "",
     },
-  })
+  });
 
-  const onSubmit = (data: FormValues) => {
-    
-  }
+  const onSubmit = async (data: FormValues) => {
+    const res = await sendOrganizationInvitation({ email: data.email });
+    if (res.status === 200) {
+      toast.success("Invitation sent");
+    } else {
+      toast.error(res.message);
+    }
+  };
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(window.location.href)
-    toast.success("Invite link copied")
-  }
+    await navigator.clipboard.writeText(window.location.href);
+    toast.success("Invite link copied");
+  };
 
   return (
     <Dialog>
@@ -59,10 +65,7 @@ export default function AddNewMember() {
 
         {/* FORM START */}
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="email"
@@ -81,15 +84,9 @@ export default function AddNewMember() {
 
             {/* FOOTER INSIDE FORM */}
             <DialogFooter className="sm:justify-between">
-              <Button type="submit">
-                Invite to Workspace
-              </Button>
+              <Button type="submit">Invite to Workspace</Button>
 
-              <Button
-                type="button"
-                variant="outline"
-                onClick={copyLink}
-              >
+              <Button type="button" variant="outline" onClick={copyLink}>
                 <LinkIcon className="w-4 h-4 mr-2" />
                 Copy Link
               </Button>
@@ -99,5 +96,5 @@ export default function AddNewMember() {
         {/* FORM END */}
       </DialogContent>
     </Dialog>
-  )
+  );
 }

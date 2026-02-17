@@ -1,5 +1,5 @@
 import MemberTable from "@/components/global/member-table";
-import AddNewMember from "@/components/modals/add-member";
+import AddNewMemberInvite from "@/components/modals/invite-member";
 import { listMembers } from "@/server/member";
 
 export default async function MembersPage({
@@ -27,7 +27,7 @@ export default async function MembersPage({
                   <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
                     Collaborators
                   </h1>
-                  <AddNewMember/>
+                  <AddNewMemberInvite/>
                 </div>
         <div className="flex">
           <div className="w-3/4">

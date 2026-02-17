@@ -2,6 +2,9 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./prisma";
 import { organization } from "better-auth/plugins";
+import transporter from "./nodemailer";
+import OrganizationInvitationEmail from "@/components/emails/org-invitation";
+import { render } from "@react-email/render";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -28,17 +31,37 @@ export const auth = betterAuth({
       enabled: true,
     },
   },
-  plugins: [organization({
-    schema:{
-      organization:{
-        additionalFields:{
-          description: {
-            type: "string",
-            input: true,
-            required: false
-          }
-        }
-      }
-    }
-  })],
+  plugins: [
+    organization({
+      schema: {
+        organization: {
+          additionalFields: {
+            description: {
+              type: "string",
+              input: true,
+              required: false,
+            },
+          },
+        },
+      },
+      async sendInvitationEmail(data) {
+        const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/accept-invitation/${data.id}`;
+        const htmlContent = await render(
+          OrganizationInvitationEmail({
+            email: data.email,
+            invitedByUsername: data.inviter.user.name,
+            invitedByEmail: data.inviter.user.email,
+            teamName: data.organization.name,
+            inviteLink,
+          }),
+        );
+        await transporter.sendMail({
+          from: `${process.env.NODEMAILER_USER}`,
+          to: data.email,
+          subject: `You have been invited to ${data.organization.name} Workspace by ${data.inviter.user.name}`,
+          html: htmlContent,
+        });
+      },
+    }),
+  ],
 });
