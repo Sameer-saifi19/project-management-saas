@@ -21,3 +21,5 @@ export const createOrgSchema = z.object({
 });
 
 export type createOrgSchemaType = z.infer<typeof createOrgSchema>;
+
+export type updateOrgSchemaType = z.infer<typeof createOrgSchema>
