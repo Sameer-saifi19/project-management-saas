@@ -4,7 +4,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteColumn } from "@/server/column";
@@ -34,15 +33,11 @@ export default function ActionDropdown({ columnId }: Props) {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-40" align="start">
           <DropdownMenuGroup>
-            <DropdownMenuLabel>Column settings</DropdownMenuLabel>
-            <DropdownMenuItem>
-              <Edit /> Edit
-            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => handleDelete(columnId)}
               variant="destructive"
             >
-              <Trash /> Delete
+              <Trash /> Delete Column
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>

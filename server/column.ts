@@ -94,3 +94,39 @@ export const deleteColumn = async (columnId: string) => {
     throw new Error("Failed to delete column");
   }
 };
+
+export const updateColumnTitle = async (columnId: string, name: string) => {
+  if (!columnId) {
+    throw new Error("Column ID is required");
+  }
+
+  if (!name.trim()) {
+    throw new Error("Column name cannot be empty");
+  }
+
+  try {
+    const column = await prisma.column.update({
+      where: {
+        id: columnId,
+      },
+      data: {
+        name: name,
+      },
+    });
+
+    if(!column){
+      return {status: 500, success: false}
+    }
+
+    revalidatePath("/project/p", "layout");
+
+    return {
+      status: 200,
+      success: true,
+      data: column,
+    };
+  } catch (error) {
+    console.error("[UPDATE_COLUMN_TITLE]", error);
+    throw new Error("Failed to update column title");
+  }
+};
