@@ -1,0 +1,71 @@
+"use server";
+
+import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+interface Props {
+  name: string;
+  projectId: string;
+}
+
+export const createColumns = async ({ name, projectId }: Props) => {
+  try {
+    const createColumn = await prisma.column.create({
+      data: {
+        name,
+        order: 1,
+        projectId,
+      },
+    });
+
+    if (!createColumn) {
+      return {
+        status: 500,
+        success: false,
+        message: "Error creating column",
+        data: null,
+      };
+    }
+    
+    revalidatePath("/project/p", "layout")
+
+    return {
+      status: 201,
+      success: true,
+      message: "Column created",
+      data: createColumn,
+    };
+
+  } catch (error) {
+    console.log(error)
+    return { status: 500, message: "Internal server error" };
+  }
+};
+
+export const getAllColumns = async (projectId: string) => {
+  try {
+    const getAllColumn = await prisma.column.findMany({
+      where: {
+        projectId: projectId,
+      },
+    });
+
+    if (!getAllColumn) {
+      return {
+        status: 500,
+        success: false,
+        message: "Error creating column",
+        data: null,
+      };
+    }
+
+    return {
+      status: 200,
+      success: true,
+      message: "column fetched",
+      data: getAllColumn
+    };
+    
+  } catch (error) {
+    return { status: 500, message: "Internal server error" };
+  }
+};

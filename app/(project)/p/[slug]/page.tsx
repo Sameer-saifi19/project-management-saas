@@ -1,4 +1,4 @@
-import ProjectNavbar from "@/components/global/project-navbar/project-navbar";
+import { getAllColumns } from "@/server/column";
 import KanbanBoard from "./client";
 
 type Props = {
@@ -7,9 +7,16 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
+  const res = await getAllColumns(slug);
+  const raw = res.data
+  const columns = raw?.map((c) => ({
+    id: c.id,
+    name: c.name,
+    tasks: [] as [],
+  }));
   return (
     <>
-        <KanbanBoard/>
+      <KanbanBoard key={slug} columns={columns ?? []} />
     </>
   );
 }

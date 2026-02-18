@@ -11,7 +11,6 @@ import {
 import { deleteProject } from "@/server/project";
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
-import { usePathname } from "next/navigation";
 import { CreateProjectSheet } from "@/components/modals/create-project";
 import { formatDateTime } from "@/utils/date-formatter";
 import Link from "next/link";
@@ -25,7 +24,6 @@ type Projects = {
 };
 
 export default function ProjectList({ projects }: { projects: Projects[] }) {
-  const pathName = usePathname();
 
   const handleDelete = async (projectId: string) => {
     const result = await deleteProject(projectId);
@@ -53,7 +51,7 @@ export default function ProjectList({ projects }: { projects: Projects[] }) {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {!projects.length ? <h1>No projects found</h1> : null}
           {projects.map((project) => (
-            <Link href={`/p/${project.slug}`} key={project.id}>
+            <Link href={`/p/${project.id}`} key={project.id}>
               <Card  className="hover:shadow-md dark:hover:bg-muted transition">
                 <CardHeader>
                   <h3 className="font-semibold text-lg">{project.name}</h3>

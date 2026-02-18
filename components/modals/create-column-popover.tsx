@@ -15,8 +15,14 @@ import { Input } from "../ui/input";
 import { createColumnSchema, createColumnSchemaType } from "@/schema/column";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { useParams } from "next/navigation";
+import { createColumns } from "@/server/column";
+import { toast } from "sonner";
 
 export default function ColumnPopover() {
+  const params = useParams();
+  const slug = params.slug as string;
+
   const [open, setOpen] = useState(false);
 
   const form = useForm<createColumnSchemaType>({
@@ -27,19 +33,23 @@ export default function ColumnPopover() {
   });
 
   const createColumn = async (value: createColumnSchemaType) => {
-    console.log(value.name);
-    setOpen(false);
+    const data = await createColumns({ name: value.name, projectId: slug });
+    if(!data){
+      toast.error("error")
+    }
+    form.reset()
+    setOpen(false)
   };
-
+  
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger className="w-full"> 
+        <PopoverTrigger className="w-full">
           <Button className="w-full">
             <PlusIcon /> Add Column
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="p-2" >
+        <PopoverContent align="start" className="p-2">
           <div className="grid gap-2">
             <Form {...form}>
               <form
