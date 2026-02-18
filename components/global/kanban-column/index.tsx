@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import ActionDropdown from "./action-dropdown";
-import { useState, useRef, useEffect, use } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { updateColumnTitle } from "@/server/column";
@@ -23,7 +23,7 @@ export default function KanbanColumn({
 }: {
   id: string;
   title: string;
-  tasks: { id: number; title: string }[];
+  tasks: { id: string; title: string }[];
 }) {
   // column
   const [isEditing, setIsEditing] = useState(false);
@@ -129,7 +129,7 @@ export default function KanbanColumn({
           {tasks.map((task) => (
             <div
               key={task.id}
-              className="rounded-xl border bg-background p-4 text-sm shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              className="rounded-xl border bg-background px-4 py-2 text-sm shadow-sm hover:shadow-md transition-shadow cursor-pointer"
             >
               {task.title}
             </div>

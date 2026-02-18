@@ -3,10 +3,12 @@
 import KanbanColumn from "@/components/global/kanban-column";
 import ColumnPopover from "@/components/modals/create-column-popover";
 
+type Task = { id: string; title: string };
+
 type Columns = {
   id: string;
   name: string;
-  tasks: [];
+  tasks: Task[];
 };
 
 export default function KanbanBoard({ columns }: { columns: Columns[] }) {
