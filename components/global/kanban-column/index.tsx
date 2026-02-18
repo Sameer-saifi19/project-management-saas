@@ -10,10 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import ActionDropdown from "./action-dropdown";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { updateColumnTitle } from "@/server/column";
+import { createTask } from "@/server/tasks";
 
 export default function KanbanColumn({
   id,
@@ -24,10 +25,16 @@ export default function KanbanColumn({
   title: string;
   tasks: { id: number; title: string }[];
 }) {
+  // column
   const [isEditing, setIsEditing] = useState(false);
   const [titleEdit, setTitleEdit] = useState(title);
 
+  // task
+  const [isAddingTask, setIsAddingTask] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+
   const inputRef = useRef<HTMLInputElement>(null);
+  const taskInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isEditing) {
@@ -36,7 +43,27 @@ export default function KanbanColumn({
     }
   }, [isEditing]);
 
-  // SAVE
+  useEffect(() => {
+    if (isAddingTask) {
+      taskInputRef.current?.focus();
+    }
+  }, [isAddingTask]);
+
+  const handleCreateTask = async () => {
+    if (!newTaskTitle.trim()) return;
+
+    await createTask(id, newTaskTitle);
+
+    setNewTaskTitle("");
+    setIsAddingTask(false);
+  };
+
+  const handleCancelTask = () => {
+    setNewTaskTitle("");
+    setIsAddingTask(false);
+  };
+
+  // SAVE title
   const handleSave = async () => {
     if (!titleEdit.trim()) {
       setTitleEdit(title);
@@ -109,10 +136,39 @@ export default function KanbanColumn({
           ))}
 
           <div className="mt-2">
-            <Button className="w-full flex justify-start" variant={"ghost"}>
-              <Plus className="h-4 w-4" />
-              Add Task
-            </Button>
+            {isAddingTask ? (
+              <div className="flex flex-col gap-2">
+                <Input
+                  ref={taskInputRef}
+                  value={newTaskTitle}
+                  onChange={(e) => setNewTaskTitle(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleCreateTask();
+                    if (e.key === "Escape") handleCancelTask();
+                  }}
+                  placeholder="Enter task title..."
+                />
+
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={handleCreateTask}>
+                    Save
+                  </Button>
+
+                  <Button size="sm" variant="ghost" onClick={handleCancelTask}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button
+                className="w-full flex justify-start"
+                variant="ghost"
+                onClick={() => setIsAddingTask(true)}
+              >
+                <Plus className="h-4 w-4" />
+                Add Task
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
