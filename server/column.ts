@@ -25,8 +25,8 @@ export const createColumns = async ({ name, projectId }: Props) => {
         data: null,
       };
     }
-    
-    revalidatePath("/project/p", "layout")
+
+    revalidatePath("/project/p", "layout");
 
     return {
       status: 201,
@@ -34,9 +34,8 @@ export const createColumns = async ({ name, projectId }: Props) => {
       message: "Column created",
       data: createColumn,
     };
-
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return { status: 500, message: "Internal server error" };
   }
 };
@@ -46,6 +45,9 @@ export const getAllColumns = async (projectId: string) => {
     const getAllColumn = await prisma.column.findMany({
       where: {
         projectId: projectId,
+      },
+      include: {
+        tasks: true,
       },
     });
 
@@ -62,10 +64,33 @@ export const getAllColumns = async (projectId: string) => {
       status: 200,
       success: true,
       message: "column fetched",
-      data: getAllColumn
+      data: getAllColumn,
     };
-    
   } catch (error) {
     return { status: 500, message: "Internal server error" };
+  }
+};
+
+export const deleteColumn = async (columnId: string) => {
+  if (!columnId) {
+    throw new Error("ColumnId is required");
+  }
+
+  try {
+    const deleteCol = await prisma.column.delete({
+      where: {
+        id: columnId,
+      },
+    });
+
+    if (!deleteCol) {
+      return { status: 500, success: false };
+    }
+
+    revalidatePath("/project/p", "layout");
+    return { success: true, status: 200 };
+  } catch (error) {
+    console.error("Error deleting column", error);
+    throw new Error("Failed to delete column");
   }
 };
