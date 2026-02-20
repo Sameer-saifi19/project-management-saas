@@ -8,7 +8,7 @@ import {
   CardAction,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Edit, Plus, Trash } from "lucide-react";
 import ActionDropdown from "./action-dropdown";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
@@ -32,10 +32,11 @@ export default function KanbanColumn({
   const [isEditing, setIsEditing] = useState(false);
   const [titleEdit, setTitleEdit] = useState(title);
 
+  const [showDelete, setShowDelete] = useState(false);
   // task
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  
+
   // Optimistic state for tasks – keep stable order when props update (e.g. after complete toggle)
   const [localTasks, setLocalTasks] = useState(tasks);
 
@@ -46,7 +47,10 @@ export default function KanbanColumn({
       const taskMap = new Map(tasks.map((t) => [t.id, t]));
       const ordered = prevIds
         .map((id) => taskMap.get(id))
-        .filter((t): t is { id: string; title: string; completed: boolean } => t != null);
+        .filter(
+          (t): t is { id: string; title: string; completed: boolean } =>
+            t != null,
+        );
       const newTaskIds = tasks.filter((t) => !prevIds.includes(t.id));
       return [...ordered, ...newTaskIds];
     });
@@ -154,6 +158,7 @@ export default function KanbanColumn({
                 >
                   <Field orientation={"horizontal"}>
                     <Checkbox
+                      className="rounded-full cursor-pointer"
                       checked={task.completed}
                       onCheckedChange={async (checked) => {
                         // Handle indeterminate state - treat as false
@@ -163,21 +168,27 @@ export default function KanbanColumn({
                           prevTasks.map((t) =>
                             t.id === task.id
                               ? { ...t, completed: newCompleted }
-                              : t
-                          )
+                              : t,
+                          ),
                         );
+                        setShowDelete(true)
                         try {
-                          const result = await updateTaskComplete(task.id, newCompleted);
+                          const result = await updateTaskComplete(
+                            task.id,
+                            newCompleted,
+                          );
                           if (!result.success) {
                             // Revert on error
                             setLocalTasks((prevTasks) =>
                               prevTasks.map((t) =>
                                 t.id === task.id
                                   ? { ...t, completed: !newCompleted }
-                                  : t
-                              )
+                                  : t,
+                              ),
                             );
-                            toast.error(result.message || "Failed to update task");
+                            toast.error(
+                              result.message || "Failed to update task",
+                            );
                           }
                         } catch (error) {
                           // Revert on error
@@ -185,10 +196,13 @@ export default function KanbanColumn({
                             prevTasks.map((t) =>
                               t.id === task.id
                                 ? { ...t, completed: !newCompleted }
-                                : t
-                            )
+                                : t,
+                            ),
                           );
-                          const errorMessage = error instanceof Error ? error.message : "Failed to update task";
+                          const errorMessage =
+                            error instanceof Error
+                              ? error.message
+                              : "Failed to update task";
                           toast.error(errorMessage);
                           console.error("Task update error:", error);
                         }
@@ -198,12 +212,25 @@ export default function KanbanColumn({
                     <FieldLabel
                       className={
                         task.completed === true
-                          ? "text-muted-foreground"
+                          ? "text-muted-foreground line-through"
                           : "text-foreground"
                       }
                     >
                       {task.title}
                     </FieldLabel>
+
+                    {showDelete ? (
+                      <Button variant={"ghost"} size={"icon-sm"} className="text-muted-foreground">
+                        <Trash />
+                      </Button>
+                    ) : null}
+                    <Button
+                      onClick={handleCreateTask}
+                      variant={"ghost"}
+                      size={"icon-sm"}
+                    >
+                      <Edit className="text-muted-foreground" />
+                    </Button>
                   </Field>
                 </FieldGroup>
               ))}
