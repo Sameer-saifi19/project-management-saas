@@ -7,7 +7,7 @@ type Props = {
 
 export default function Layout({ children }: Props) {
   return (
-    <div className="w-full px-10 h-screen flex flex-col gap-6">
+    <div className="w-full h-screen flex flex-col gap-6">
       <ProjectNavbar />
       <div className="flex-1 overflow-hidden">
         <ReactQueryProvider>{children}</ReactQueryProvider>

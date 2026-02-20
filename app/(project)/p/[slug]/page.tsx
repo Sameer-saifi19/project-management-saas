@@ -14,7 +14,7 @@ export default async function Page({ params }: Props) {
     raw?.map((c) => ({
       id: c.id,
       name: c.name,
-      tasks: (c.tasks ?? []).map((t) => ({ id: t.id, title: t.title })),
+      tasks: (c.tasks ?? []).map((t) => ({ id: t.id, title: t.title , completed: t.completed})),
     })) ?? [];
   return (
     <>

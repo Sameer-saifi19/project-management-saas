@@ -3,7 +3,7 @@
 import KanbanColumn from "@/components/global/kanban-column";
 import ColumnPopover from "@/components/modals/create-column-popover";
 
-type Task = { id: string; title: string };
+type Task = { id: string; title: string, completed: boolean };
 
 type Columns = {
   id: string;
@@ -13,7 +13,7 @@ type Columns = {
 
 export default function KanbanBoard({ columns }: { columns: Columns[] }) {
   return (
-    <div className="w-full overflow-x-auto overflow-y-hidden px-2 h-full">
+    <div className="w-full overflow-x-auto no-scrollbar overflow-y-hidden px-2 h-full">
       <div
         className="flex flex-row gap-4 items-start h-full px-2"
         style={{ width: "max-content", minWidth: "100%" }}

@@ -47,7 +47,9 @@ export const getAllColumns = async (projectId: string) => {
         projectId: projectId,
       },
       include: {
-        tasks: true,
+        tasks: {
+          orderBy: { order: "asc" },
+        },
       },
     });
 

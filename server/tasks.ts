@@ -25,3 +25,43 @@ export const createTask = async (columnId: string, title: string) => {
     throw new Error("Error creating task");
   }
 };
+
+export async function updateTaskComplete(taskId: string, completed: boolean) {
+  if (!taskId) {
+    return {
+      success: false,
+      status: 400,
+      message: "Task ID is required",
+    };
+  }
+
+  try {
+    const updated = await prisma.task.update({
+      where: { id: taskId },
+      data: { completed },
+    });
+
+    if (!updated) {
+      return {
+        success: false,
+        status: 404,
+        message: "Task not found",
+      };
+    }
+
+    revalidatePath("/project/p", "layout");
+    return {
+      success: true,
+      status: 200,
+      message: "Task updated successfully",
+    };
+  } catch (error) {
+    console.error("Failed to update task:", error);
+    const errorMessage = error instanceof Error ? error.message : "Task update failed";
+    return {
+      success: false,
+      status: 500,
+      message: errorMessage,
+    };
+  }
+}

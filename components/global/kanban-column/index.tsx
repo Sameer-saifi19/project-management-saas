@@ -14,7 +14,10 @@ import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { updateColumnTitle } from "@/server/column";
-import { createTask } from "@/server/tasks";
+import { createTask, updateTaskComplete } from "@/server/tasks";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function KanbanColumn({
   id,
@@ -23,7 +26,7 @@ export default function KanbanColumn({
 }: {
   id: string;
   title: string;
-  tasks: { id: string; title: string }[];
+  tasks: { id: string; title: string; completed: boolean }[];
 }) {
   // column
   const [isEditing, setIsEditing] = useState(false);
@@ -32,6 +35,22 @@ export default function KanbanColumn({
   // task
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  
+  // Optimistic state for tasks – keep stable order when props update (e.g. after complete toggle)
+  const [localTasks, setLocalTasks] = useState(tasks);
+
+  // When server data arrives, update task fields but preserve current display order (no reorder)
+  useEffect(() => {
+    setLocalTasks((prev) => {
+      const prevIds = prev.map((t) => t.id);
+      const taskMap = new Map(tasks.map((t) => [t.id, t]));
+      const ordered = prevIds
+        .map((id) => taskMap.get(id))
+        .filter((t): t is { id: string; title: string; completed: boolean } => t != null);
+      const newTaskIds = tasks.filter((t) => !prevIds.includes(t.id));
+      return [...ordered, ...newTaskIds];
+    });
+  }, [tasks]);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const taskInputRef = useRef<HTMLInputElement>(null);
@@ -86,7 +105,7 @@ export default function KanbanColumn({
 
   return (
     <div
-      className="flex flex-col gap-2 h-full"
+      className="flex flex-col gap-2 h-160"
       style={{ width: "280px", minWidth: "280px" }}
     >
       <Card className="w-full">
@@ -103,7 +122,7 @@ export default function KanbanColumn({
                   if (e.key === "Enter") handleSave();
                   if (e.key === "Escape") handleCancel();
                 }}
-                className="border px-2 py-1 rounded-2xl w-full text-sm font-semibold uppercase"
+                className="border px-2 py-1  w-full text-sm font-semibold uppercase"
               />
             ) : (
               <CardTitle
@@ -125,51 +144,111 @@ export default function KanbanColumn({
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 pb-4 flex flex-col gap-2">
-          {tasks.map((task) => (
-            <div
-              key={task.id}
-              className="rounded-xl border bg-background px-4 py-2 text-sm shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-            >
-              {task.title}
-            </div>
-          ))}
+        <CardContent className="flex overflow-y-auto flex-col pl-2 pr-0">
+          <ScrollArea className="h-full pr-4 scros">
+            <div className="flex flex-col gap-1">
+              {localTasks.map((task) => (
+                <FieldGroup
+                  key={task.id}
+                  className="rounded-xl border bg-background px-4 py-3 text-sm shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                >
+                  <Field orientation={"horizontal"}>
+                    <Checkbox
+                      checked={task.completed}
+                      onCheckedChange={async (checked) => {
+                        // Handle indeterminate state - treat as false
+                        const newCompleted = checked === true;
+                        // Optimistic update
+                        setLocalTasks((prevTasks) =>
+                          prevTasks.map((t) =>
+                            t.id === task.id
+                              ? { ...t, completed: newCompleted }
+                              : t
+                          )
+                        );
+                        try {
+                          const result = await updateTaskComplete(task.id, newCompleted);
+                          if (!result.success) {
+                            // Revert on error
+                            setLocalTasks((prevTasks) =>
+                              prevTasks.map((t) =>
+                                t.id === task.id
+                                  ? { ...t, completed: !newCompleted }
+                                  : t
+                              )
+                            );
+                            toast.error(result.message || "Failed to update task");
+                          }
+                        } catch (error) {
+                          // Revert on error
+                          setLocalTasks((prevTasks) =>
+                            prevTasks.map((t) =>
+                              t.id === task.id
+                                ? { ...t, completed: !newCompleted }
+                                : t
+                            )
+                          );
+                          const errorMessage = error instanceof Error ? error.message : "Failed to update task";
+                          toast.error(errorMessage);
+                          console.error("Task update error:", error);
+                        }
+                      }}
+                    />
 
-          <div className="mt-2">
-            {isAddingTask ? (
-              <div className="flex flex-col gap-2">
-                <Input
-                  ref={taskInputRef}
-                  value={newTaskTitle}
-                  onChange={(e) => setNewTaskTitle(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleCreateTask();
-                    if (e.key === "Escape") handleCancelTask();
-                  }}
-                  placeholder="Enter task title..."
-                />
+                    <FieldLabel
+                      className={
+                        task.completed === true
+                          ? "text-muted-foreground"
+                          : "text-foreground"
+                      }
+                    >
+                      {task.title}
+                    </FieldLabel>
+                  </Field>
+                </FieldGroup>
+              ))}
 
-                <div className="flex gap-2">
-                  <Button size="sm" onClick={handleCreateTask}>
-                    Save
+              <div className="mt-2">
+                {isAddingTask ? (
+                  <div className="flex flex-col gap-2">
+                    <Input
+                      ref={taskInputRef}
+                      value={newTaskTitle}
+                      onChange={(e) => setNewTaskTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleCreateTask();
+                        if (e.key === "Escape") handleCancelTask();
+                      }}
+                      placeholder="Enter task title..."
+                    />
+
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleCreateTask}>
+                        Save
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleCancelTask}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    className="w-full flex justify-start"
+                    variant="ghost"
+                    onClick={() => setIsAddingTask(true)}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Task
                   </Button>
-
-                  <Button size="sm" variant="ghost" onClick={handleCancelTask}>
-                    Cancel
-                  </Button>
-                </div>
+                )}
               </div>
-            ) : (
-              <Button
-                className="w-full flex justify-start"
-                variant="ghost"
-                onClick={() => setIsAddingTask(true)}
-              >
-                <Plus className="h-4 w-4" />
-                Add Task
-              </Button>
-            )}
-          </div>
+            </div>
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>
