@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
-const protectedRoutes = [" "];
+const protectedPrefixes = ["/w", "/user", "/p", "/onboarding", "/set-up-workspace"];
 
 export async function proxy(req: NextRequest) {
   const { nextUrl } = req;
@@ -10,7 +10,10 @@ export async function proxy(req: NextRequest) {
   const res = NextResponse.next();
 
   const isLoggedIn = !!sessionCookie;
-  const isOnProtectedRoute = protectedRoutes.includes(nextUrl.pathname);
+  const isOnProtectedRoute = protectedPrefixes.some((prefix) =>
+    nextUrl.pathname === prefix ||
+    nextUrl.pathname.startsWith(prefix + "/")
+  );
   const isOnAuthRoute = nextUrl.pathname.startsWith("/auth");
 
   if (isOnProtectedRoute && !isLoggedIn) {
@@ -18,7 +21,7 @@ export async function proxy(req: NextRequest) {
   }
 
   if (isOnAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/w", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   return res;
