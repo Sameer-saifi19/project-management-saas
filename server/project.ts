@@ -6,6 +6,7 @@ import { createProjectSchema, createProjectSchemaType } from "@/schema/project";
 import { APIError } from "better-auth/api";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { hasProjectPermission } from "./persmission";
 
 export const createProject = async (values: createProjectSchemaType) => {
   const session = await auth.api.getSession({
@@ -17,6 +18,15 @@ export const createProject = async (values: createProjectSchemaType) => {
       success: false,
       status: 401,
       message: "Unauthorized",
+    };
+  }
+
+  const canCreate = await hasProjectPermission("create");
+  if (!canCreate) {
+    return {
+      success: false,
+      status: 403,
+      message: "You do not have permission to create projects",
     };
   }
 
@@ -60,14 +70,13 @@ export const createProject = async (values: createProjectSchemaType) => {
       };
     }
 
-    revalidatePath('/', "layout")
+    revalidatePath("/", "layout");
     return {
       success: true,
       status: 201,
       message: "Organization created successfully",
       data: data,
     };
-    
   } catch (error) {
     if (error instanceof APIError) {
       return {
@@ -105,8 +114,8 @@ export const getAllProjects = async (orgId: string, orgSlug: string) => {
         organizationId: orgId,
       },
       orderBy: {
-        createdAt: "desc"
-      }
+        createdAt: "desc",
+      },
     });
 
     if (!projects) {
@@ -150,6 +159,15 @@ export const deleteProject = async (projectId: string) => {
     };
   }
 
+  const canDelete = await hasProjectPermission("delete");
+  if (!canDelete) {
+    return {
+      success: false,
+      status: 403,
+      message: "You do not have permission to delete projects",
+    };
+  }
+
   try {
     const result = await prisma.project.delete({
       where: {
@@ -161,7 +179,7 @@ export const deleteProject = async (projectId: string) => {
       return { status: 409, success: false, message: "Cannot delete project" };
     }
 
-    revalidatePath('/w', 'layout')
+    revalidatePath("/w", "layout");
     return {
       status: 200,
       data: result,
@@ -201,6 +219,15 @@ export const updateProject = async (
     };
   }
 
+  const canUpdate = await hasProjectPermission("update");
+  if (!canUpdate) {
+    return {
+      success: false,
+      status: 403,
+      message: "You do not have permission to update projects",
+    };
+  }
+
   const parsed = createProjectSchema.safeParse(values);
   if (!parsed.success) {
     return { success: false, message: "Invalid data" };
@@ -225,13 +252,13 @@ export const updateProject = async (
 
     const findProject = await prisma.project.findFirst({
       where: {
-        id: projectId
-      }
-    })
+        id: projectId,
+      },
+    });
 
     const result = await prisma.project.update({
       where: {
-          id: findProject?.id,
+        id: findProject?.id,
       },
       data: {
         name,
@@ -245,8 +272,8 @@ export const updateProject = async (
     if (!result) {
       return { status: 500, success: false, message: "Error updating project" };
     }
-    
-    revalidatePath('/w', "layout")
+
+    revalidatePath("/w", "layout");
 
     return {
       status: 200,

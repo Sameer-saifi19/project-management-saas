@@ -65,7 +65,7 @@ export default function MemberTable({
           >
             {/* Avatar */}
             <TableCell className="text-center">
-              {item.image ? <Image src={item.image} height={30} width={30} alt="member avatar" className="rounded-full object-cover mx-auto"/>: <Image src="/person-placeholder.png" height={30} width={30} alt="default avatar" className="rounded-full object-cover mx-auto"/>}
+              <Image src={"/person-placeholder.png"} height={30} width={30} alt="member avatar"/>
             </TableCell>
 
             {/* Name */}

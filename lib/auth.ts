@@ -5,6 +5,8 @@ import { organization } from "better-auth/plugins";
 import transporter from "./nodemailer";
 import OrganizationInvitationEmail from "@/components/emails/org-invitation";
 import { render } from "@react-email/render";
+import { ac, admin, member, owner } from "./permissions";
+import { nextCookies } from "better-auth/next-js";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -62,6 +64,13 @@ export const auth = betterAuth({
           html: htmlContent,
         });
       },
+      ac,
+      roles: {
+        owner,
+        member,
+        admin,
+      },
     }),
+    nextCookies(),
   ],
 });
