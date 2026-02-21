@@ -1,0 +1,16 @@
+feat(folder) → new feature
+
+fix → bug fix
+
+refactor → code improvement without behavior change
+
+chore → tooling, configs
+
+docs → documentation
+
+style → formatting only
+
+test → tests
+
+
+

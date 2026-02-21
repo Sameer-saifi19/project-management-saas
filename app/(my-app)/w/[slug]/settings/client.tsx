@@ -37,7 +37,6 @@ export function WorkspaceSettingsForm({
 
   return (
     <div className="space-y-6">
-      {/* ---------------- General ---------------- */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">General</CardTitle>
@@ -47,7 +46,6 @@ export function WorkspaceSettingsForm({
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Name + Slug */}
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-4">
               <Label>Workspace Name</Label>
@@ -69,20 +67,17 @@ export function WorkspaceSettingsForm({
             </div>
           </div>
 
-          {/* Description */}
           <div className="space-y-2">
             <Label>Description</Label>
             <Textarea rows={4} defaultValue={description} />
           </div>
 
-          {/* Actions */}
           <div className="flex items-center justify-between">
             <Button>Save Changes</Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* ---------------- Appearance ---------------- */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Appearance</CardTitle>
@@ -104,7 +99,6 @@ export function WorkspaceSettingsForm({
               />
             </div>
 
-            {/* Upload */}
             <div className="space-y-2">
               <p className="text-sm font-medium">Workspace Logo</p>
               <p className="text-xs text-muted-foreground">
@@ -130,7 +124,6 @@ export function WorkspaceSettingsForm({
         </CardContent>
       </Card>
 
-      {/* ---------------- Danger Zone ---------------- */}
       <Card className="border-destructive/40">
         <CardHeader>
           <CardTitle className="text-base text-destructive">
