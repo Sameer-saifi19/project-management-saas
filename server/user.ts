@@ -24,6 +24,7 @@ export const onAuthenticatedUser = async (name: string, slug: string, userId: st
       status: 201,
       success: true,
       message: "Workspace created successfully",
+      data: createOrg
     };
   } catch (error) {
     console.error("onAuthenticatedUser server error", error);

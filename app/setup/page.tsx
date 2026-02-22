@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
-import { getInitialOrganization, listOrganization } from "@/server/organization";
+import { listOrganization } from "@/server/organization";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
   const session = await auth.api.getSession({
@@ -12,14 +12,16 @@ export default async function Page() {
     return { status: 403, success: false, message: "Unauthorized", data: null };
   }
 
-  const redirectRule = await getInitialOrganization(session.user.id);
-  const allOrganization = await listOrganization()
+  const redirection = await listOrganization();
+  if (redirection.data?.length) {
+    redirect(`/w/${redirection.data[0].slug}`);
+  }
 
-  if(allOrganization)
-  
   return (
     <>
-      <h1>Setting up your workspace</h1>
+    <div className="flex items-center justify-center h-screen">
+      <h1>Setting up your workspace...</h1>
+    </div>
     </>
   );
 }

@@ -40,6 +40,8 @@ export const getInitialOrganization = async (userId: string) => {
   }
 };
 
+export const checkRedirection = async () => {};
+
 export const createOrganization = async (formData: createOrgSchemaType) => {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -129,11 +131,16 @@ export const listOrganization = async () => {
         data: null,
       };
     }
-    const data = await auth.api.listOrganizations({
+    const organizations = await auth.api.listOrganizations({
       headers: await headers(),
     });
 
-    return data;
+    return {
+      status: 200,
+      success: true,
+      message: "All organization",
+      data: organizations,
+    };
   } catch (error) {
     if (error instanceof APIError) {
       return {

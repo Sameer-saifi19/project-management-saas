@@ -8,6 +8,8 @@ import { render } from "@react-email/render";
 import { ac, admin, member, owner } from "./permissions";
 import { nextCookies } from "better-auth/next-js";
 import { onAuthenticatedUser } from "@/server/user";
+import { redirect } from "next/navigation";
+import { listOrganization } from "@/server/organization";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -34,7 +36,7 @@ export const auth = betterAuth({
             `${user.name} Workspace`,
             user.name,
             user.id,
-          );
+          )
         },
       },
     },
