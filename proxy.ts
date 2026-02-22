@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
-const protectedPrefixes = ["/w", "/user", "/p", "/onboarding", "/set-up-workspace"];
+const protectedPrefixes = ["/w", "/user", "/p", "/onboarding", "/setup"];
 
 export async function proxy(req: NextRequest) {
   const { nextUrl } = req;

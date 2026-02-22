@@ -55,7 +55,7 @@ model Member {
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, userId])
-  @@map("member")
+  @@map("members")
 }
 
 model Invitation {
@@ -74,7 +74,7 @@ model Invitation {
 
   @@index([organizationId])
   @@index([email])
-  @@map("invitation")
+  @@map("invitations")
 }
 
 model Session {

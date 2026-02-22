@@ -1,0 +1,11 @@
+| Situation          | Code      |
+| ------------------ | --------- |
+| Success GET        | 200       |
+| Success POST       | 201       |
+| Success DELETE     | 204       |
+| Validation Error   | 400 / 422 |
+| Not Logged In      | 401       |
+| Not Allowed (RBAC) | 403       |
+| Not Found          | 404       |
+| Duplicate Record   | 409       |
+| Server Crash       | 500       |

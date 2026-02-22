@@ -7,6 +7,7 @@ import OrganizationInvitationEmail from "@/components/emails/org-invitation";
 import { render } from "@react-email/render";
 import { ac, admin, member, owner } from "./permissions";
 import { nextCookies } from "better-auth/next-js";
+import { onAuthenticatedUser } from "@/server/user";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -23,6 +24,19 @@ export const auth = betterAuth({
   advanced: {
     database: {
       generateId: false,
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          await onAuthenticatedUser(
+            `${user.name} Workspace`,
+            user.name,
+            user.id,
+          );
+        },
+      },
     },
   },
   session: {

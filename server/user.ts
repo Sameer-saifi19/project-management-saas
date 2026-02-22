@@ -1,36 +1,33 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { generateSlug } from "@/utils/slug-generator";
 
-export const onUserAuthenticate = async () => {
+export const onAuthenticatedUser = async (name: string, slug: string, userId: string) => {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
+    const normalizeSlug = generateSlug(slug);
+
+    const createOrg = await auth.api.createOrganization({
+      body: {
+        name,
+        slug: `${normalizeSlug}-workspace`,
+        userId,
+        keepCurrentActiveOrganization: true,
+      },
     });
 
-    if (!session?.user.id) {
-      return null;
+    if (!createOrg) {
+      return { status: 400, success: false, message: "Cannot create org" };
     }
 
-    const orgs = await auth.api.listOrganizations({
-      headers: await headers(),
-    });
-
-    return orgs.length;
+    return {
+      status: 201,
+      success: true,
+      message: "Workspace created successfully",
+    };
   } catch (error) {
-    console.error("Org check failed:", error);
-    return null;
+    console.error("onAuthenticatedUser server error", error);
+    return { status: 500, success: false, message: "Something went wrong" };
   }
 };
 
-export const checkSession = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if(!session){
-    return {status: 401, message: "Unauthorized", success: false}
-  }
-  return session
-};

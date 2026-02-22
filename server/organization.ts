@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 import {
   createOrgSchema,
   createOrgSchemaType,
@@ -9,10 +10,44 @@ import {
 import { APIError } from "better-auth/api";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { checkSession } from "./user";
+
+export const getInitialOrganization = async (userId: string) => {
+  try {
+    const findFirstOrg = await prisma.organization.findFirst();
+    if (!findFirstOrg) return { status: 409, message: "First org not found" };
+
+    const setActive = await auth.api.setActiveOrganization({
+      body: {
+        organizationId: findFirstOrg.id,
+        organizationSlug: findFirstOrg.slug,
+      },
+
+      headers: await headers(),
+    });
+
+    if (!setActive) {
+      return {
+        success: false,
+        status: 400,
+        message: "Could not set active organization",
+      };
+    }
+
+    return { status: 200, data: setActive };
+  } catch (error) {
+    console.log("get initial org", error);
+    return { status: 500, message: "Internal server error" };
+  }
+};
 
 export const createOrganization = async (formData: createOrgSchemaType) => {
-  await checkSession();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { status: 403, success: false, message: "Unauthorized", data: null };
+  }
 
   const parsed = createOrgSchema.safeParse(formData);
   if (!parsed.success) {
@@ -82,6 +117,18 @@ export const createOrganization = async (formData: createOrgSchemaType) => {
 
 export const listOrganization = async () => {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return {
+        status: 403,
+        success: false,
+        message: "Unauthorized",
+        data: null,
+      };
+    }
     const data = await auth.api.listOrganizations({
       headers: await headers(),
     });
@@ -109,7 +156,13 @@ export const updateOrganization = async (
   formData: updateOrgSchemaType,
   orgId: string,
 ) => {
-  await checkSession();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { status: 403, success: false, message: "Unauthorized", data: null };
+  }
 
   const parsed = createOrgSchema.safeParse(formData);
   if (!parsed.success) {
@@ -168,6 +221,14 @@ export const updateOrganization = async (
 };
 
 export const getFullOrganization = async (slug: string) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { status: 403, success: false, message: "Unauthorized", data: null };
+  }
+
   try {
     const data = await auth.api.getFullOrganization({
       query: {
@@ -211,7 +272,13 @@ export const getFullOrganization = async (slug: string) => {
 };
 
 export const deleteOraganization = async (orgId: string) => {
-  await checkSession();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { status: 403, success: false, message: "Unauthorized", data: null };
+  }
 
   try {
     const data = await auth.api.deleteOrganization({
