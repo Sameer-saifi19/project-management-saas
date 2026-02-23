@@ -326,3 +326,56 @@ export const deleteOraganization = async (orgId: string) => {
     };
   }
 };
+
+export const activeOrganization = async (userId: string) => {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return {
+        status: 403,
+        success: false,
+        message: "Unauthorized",
+        data: null,
+      };
+    }
+
+    const findMemberOrg = await prisma.member.findFirst({
+      where: {
+        userId,
+      },
+      include: {
+        organization: true,
+      },
+    });
+
+    const setWorkspace = await auth.api.setActiveOrganization({
+      body: {
+        organizationId: findMemberOrg?.organization.id,
+        organizationSlug: findMemberOrg?.organization.slug,
+      },
+      headers: await headers(),
+    });
+
+    if (!setWorkspace) {
+      return {
+        status: 400,
+        success: false,
+        message: "Cannot set active organization",
+        data: null,
+      };
+    }
+
+    return {
+      status: 200,
+      success: true,
+      message: `Active workspace set to ${setWorkspace.name}`,
+      data: setWorkspace,
+    };
+  } catch (error) {
+    console.error("Error in setting active workspace", error);
+    return { status: 500, success: false, message: "Internal server error" };
+  }
+};

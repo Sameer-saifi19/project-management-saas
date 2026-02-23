@@ -2,12 +2,10 @@
 
 import prisma from "@/lib/prisma";
 import { APIError } from "better-auth/api";
-import { checkSession } from "./user";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
 export const listMembers = async (slug: string) => {
-  await checkSession();
 
   try {
     const data = await prisma.organization.findUnique({
@@ -50,7 +48,6 @@ export const listMembers = async (slug: string) => {
 };
 
 export const updateMemberRole = async (memberId: string, role: "owner" | "admin" | "member") => {
-  await checkSession();
 
   try {
     const data = await auth.api.updateMemberRole({

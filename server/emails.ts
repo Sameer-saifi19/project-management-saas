@@ -1,7 +1,6 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { checkSession } from "./user";
 import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
 
@@ -9,7 +8,7 @@ import { headers } from "next/headers";
 export const sendOrganizationInvitation = async ({
   email
 }: {email: string}) => {
-  await checkSession();
+  
   try {
     const data = await auth.api.createInvitation({
       body: {

@@ -9,7 +9,8 @@ import { ac, admin, member, owner } from "./permissions";
 import { nextCookies } from "better-auth/next-js";
 import { onAuthenticatedUser } from "@/server/user";
 import { redirect } from "next/navigation";
-import { listOrganization } from "@/server/organization";
+import { activeOrganization, listOrganization } from "@/server/organization";
+import OrganizationList from "@/app/(my-app)/w/organizations/page";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -36,7 +37,7 @@ export const auth = betterAuth({
             `${user.name} Workspace`,
             user.name,
             user.id,
-          )
+          );
         },
       },
     },

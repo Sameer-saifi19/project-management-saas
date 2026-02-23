@@ -1,9 +1,7 @@
-import { CreditCard, Folder, LayoutDashboard, Settings, SquareUserRound, UserCircle2Icon, UserCog2, Users2 } from "lucide-react";
+import { CreditCard, Folder, Settings, SquareUserRound, UserCircle2Icon, UserCog2, Users2 } from "lucide-react";
 import React from "react";
 
-export const menuItems = (
-  slug: string,
-): { title: string; url: string; icon: React.ReactNode }[] => [
+export const menuItems = (slug: string): { title: string; url: string; icon: React.ReactNode }[] => [
   {
     title: "Projects",
     url: `/w/${slug}/projects`,

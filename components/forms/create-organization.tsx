@@ -19,8 +19,10 @@ import {
 import { Textarea } from "../ui/textarea";
 import { createOrganization } from "@/server/organization";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CreateOrgForm() {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<createOrgSchemaType>({
@@ -49,6 +51,7 @@ export default function CreateOrgForm() {
         
         if (res.status === 201) {
           toast.success("Organization created");
+          router.push(`/w/${res.data?.slug}`)
         } else {
           if (!res.success) {
             toast.error(res.message);
@@ -66,7 +69,7 @@ export default function CreateOrgForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 max-w-xl"
+          className="space-y-6 max-w-xl p-2"
         >
           {/* Name */}
           <FormField
@@ -77,7 +80,7 @@ export default function CreateOrgForm() {
                 <FormLabel>Name</FormLabel>
 
                 <FormControl>
-                  <Input placeholder="Enter organization name" {...field} />
+                  <Input placeholder="Enter workspace name" {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -101,7 +104,7 @@ export default function CreateOrgForm() {
                 </FormControl>
 
                 <FormDescription>
-                  This slug is used as unique identifier for organizations.
+                  This slug is used as unique identifier for workspace.
                 </FormDescription>
 
                 <FormMessage />
@@ -130,9 +133,9 @@ export default function CreateOrgForm() {
             )}
           />
 
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" className="w-full" disabled={isPending}>
             {" "}
-            {isPending ? "creating..." : "Create Organization"}
+            {isPending ? "creating..." : "Create"}
           </Button>
         </form>
       </Form>
