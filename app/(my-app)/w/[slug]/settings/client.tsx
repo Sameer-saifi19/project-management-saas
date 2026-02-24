@@ -27,12 +27,12 @@ export function WorkspaceSettingsForm({
   const router = useRouter()
   const handleOrgDelete = async (orgId: string) => {
     const res = await deleteOraganization(orgId);
-    if (res.status === 200) {
-      toast.success("Workspace Deleted");
-      router.push('/w')
-    } else {
-      toast.error("error ")
+    if(!res.success){
+      toast.error("Error deleting workpsace")
     }
+
+    toast.success("Workpsace Deleted")
+    router.push('/w')
   };
 
   return (
@@ -102,7 +102,7 @@ export function WorkspaceSettingsForm({
             <div className="space-y-2">
               <p className="text-sm font-medium">Workspace Logo</p>
               <p className="text-xs text-muted-foreground">
-                Recommended image at least 400x400. GIFs are supported.
+                Recommended image at least 400x400.
               </p>
 
               <div className="flex gap-2">

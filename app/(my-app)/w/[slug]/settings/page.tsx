@@ -9,7 +9,7 @@ export default async function WorkspaceSettingsPage({
   const { slug } = await params;
   const defaultData = await getFullOrganization(slug);
   return (
-    <div className="flex flex-col gap-6 p-6 max-w-5xl">
+    <div className="flex flex-col gap-6 p-2 max-w-7xl">
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">

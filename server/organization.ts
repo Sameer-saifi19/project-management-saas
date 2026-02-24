@@ -279,22 +279,19 @@ export const getFullOrganization = async (slug: string) => {
 };
 
 export const deleteOraganization = async (orgId: string) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    return { status: 403, success: false, message: "Unauthorized", data: null };
-  }
-
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    if (!session) {
+      return { status: 403, success: false, message: "Unauthorized", data: null };
+    }
     const data = await auth.api.deleteOrganization({
       body: {
         organizationId: orgId,
       },
       headers: await headers(),
     });
-
     if (!data) {
       return {
         success: false,
