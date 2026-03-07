@@ -29,6 +29,10 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
+<<<<<<< HEAD
 , "utils/slug-generator.ts"  ],
+=======
+  ],
+>>>>>>> prod
   "exclude": ["node_modules"]
 }

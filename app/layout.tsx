@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+<<<<<<< HEAD
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -15,6 +16,17 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+=======
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+
+const inter = Inter({
+  variable: "--font-primary",
+  subsets: ["latin"],
+  display: "swap",
+>>>>>>> prod
 });
 
 export const metadata: Metadata = {
@@ -28,6 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+<<<<<<< HEAD
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -43,6 +56,18 @@ export default function RootLayout({
             <Toaster position="top-center" duration={2500} richColors />
           </ReactQueryProvider>
           
+=======
+    <html lang="en">
+      <body className={`${inter.variable} antialiased `}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster richColors duration={2500} position="bottom-right" />
+>>>>>>> prod
         </ThemeProvider>
       </body>
     </html>

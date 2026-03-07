@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+<<<<<<< HEAD
 import prisma from "./prisma";
 import { organization } from "better-auth/plugins";
 import transporter from "./nodemailer";
@@ -11,11 +12,60 @@ import { onAuthenticatedUser } from "@/server/user";
 import { redirect } from "next/navigation";
 import { activeOrganization, listOrganization } from "@/server/organization";
 import OrganizationList from "@/app/(my-app)/w/organizations/page";
+=======
+import { nextCookies } from "better-auth/next-js";
+import { organization } from "better-auth/plugins";
+import prisma from "./prisma";
+import {
+  createWorkspaceOnSignup,
+  redirectAfterDelete,
+  verifyAccessToWorkspace,
+} from "@/server/workspace";
+import { redirect } from "next/navigation";
+import { useActiveWorkspace } from "@/utils/useActiveworkspace";
+>>>>>>> prod
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+<<<<<<< HEAD
+=======
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          await createWorkspaceOnSignup({
+            name: `${user.name.split(" ")[0]}'s workspace`,
+            slug: `${user.name.split(" ")[0]}-workspace`,
+            userId: user.id,
+          });
+        },
+      },
+    },
+    session: {
+      create: {
+        after: async (session) => {
+          const access = await verifyAccessToWorkspace();
+
+          await prisma.session.update({
+            where: {
+              id: session.id,
+            },
+            data: {
+              activeOrganizationId: access.data?.organizationId,
+            },
+          });
+        },
+      },
+    },
+  },
+>>>>>>> prod
   baseURL: process.env.BETTER_AUTH_URL,
   socialProviders: {
     google: {
@@ -24,11 +74,20 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
+<<<<<<< HEAD
+=======
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 8,
+    autoSignIn: false,
+  },
+>>>>>>> prod
   advanced: {
     database: {
       generateId: false,
     },
   },
+<<<<<<< HEAD
   databaseHooks: {
     user: {
       create: {
@@ -42,12 +101,15 @@ export const auth = betterAuth({
       },
     },
   },
+=======
+>>>>>>> prod
   session: {
     expiresIn: 24 * 60 * 60,
   },
   account: {
     accountLinking: {
       enabled: true,
+<<<<<<< HEAD
     },
   },
   plugins: [
@@ -90,4 +152,10 @@ export const auth = betterAuth({
     }),
     nextCookies(),
   ],
+=======
+      trustedProviders: ["google"],
+    },
+  },
+  plugins: [nextCookies(), organization()],
+>>>>>>> prod
 });

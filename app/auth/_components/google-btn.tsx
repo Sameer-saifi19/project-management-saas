@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/lib/auth-client";
+<<<<<<< HEAD
 import { FaGoogle } from "react-icons/fa";
+=======
+>>>>>>> prod
 import { toast } from "sonner";
 
 interface OauthButtonProps {
@@ -18,7 +21,11 @@ export const GoogleBtn = ({ signUp }: OauthButtonProps) => {
 
     await signIn.social({
       provider: "google",
+<<<<<<< HEAD
       callbackURL: "/setup",
+=======
+      callbackURL: "/dashboard",
+>>>>>>> prod
       errorCallbackURL: "/auth/sign-in/error",
       fetchOptions: {
         onError: (ctx) => {
@@ -39,7 +46,10 @@ export const GoogleBtn = ({ signUp }: OauthButtonProps) => {
       onClick={handleClick}
       disabled={isPending}
     >
+<<<<<<< HEAD
       <FaGoogle size={20} />
+=======
+>>>>>>> prod
       Sign {action} with Google
     </Button>
   );

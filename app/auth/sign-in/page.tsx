@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   Card,
   CardContent,
@@ -27,3 +28,14 @@ export default function Signin() {
     </>
   );
 }
+=======
+import SigninForm from "../_components/signin-form";
+
+export default function Page() {
+  return (
+    <>
+      <SigninForm/>
+    </>
+  )
+}
+>>>>>>> prod

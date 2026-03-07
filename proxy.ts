@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
+<<<<<<< HEAD
 const protectedPrefixes = ["/w", "/user", "/p", "/onboarding", "/setup"];
+=======
+const protectedPrefixes = ["/w", "/u",];
+>>>>>>> prod
 
 export async function proxy(req: NextRequest) {
   const { nextUrl } = req;
@@ -21,7 +25,11 @@ export async function proxy(req: NextRequest) {
   }
 
   if (isOnAuthRoute && isLoggedIn) {
+<<<<<<< HEAD
     return NextResponse.redirect(new URL("/", req.url));
+=======
+    return NextResponse.redirect(new URL("/w", req.url));
+>>>>>>> prod
   }
 
   return res;

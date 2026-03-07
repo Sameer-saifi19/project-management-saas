@@ -1,6 +1,10 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
+<<<<<<< HEAD
   "style": "radix-nova",
+=======
+  "style": "new-york",
+>>>>>>> prod
   "rsc": true,
   "tsx": true,
   "tailwind": {
@@ -19,7 +23,10 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
+<<<<<<< HEAD
   "menuColor": "default",
   "menuAccent": "subtle",
+=======
+>>>>>>> prod
   "registries": {}
 }
